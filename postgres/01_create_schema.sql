@@ -23,3 +23,14 @@ CREATE TABLE IF NOT EXISTS customers (
     total_charges NUMERIC(10,2),
     churn VARCHAR(10)
 );
+
+CREATE TABLE IF NOT EXISTS prediction_history (
+    id SERIAL PRIMARY KEY,
+    customer_id VARCHAR(50),
+    probability NUMERIC(5,4),
+    prediction VARCHAR(10),
+    risk_level VARCHAR(10),
+    threshold NUMERIC(5,4),
+    model_version VARCHAR(20),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
