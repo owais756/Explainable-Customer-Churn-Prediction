@@ -1,0 +1,58 @@
+version: '3.9'
+
+services:
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: churn_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./postgres:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d churn_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    container_name: churn_api
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./backend:/usr/src/app
+    environment:
+      DB_USER:     user
+      DB_PASSWORD: password
+      DB_HOST:     postgres   
+      DB_PORT:     "5432"
+      DB_NAME:     churn_db
+
+  frontend:
+    build: ./frontend
+    container_name: churn_dashboard
+    ports:
+      - "8501:8501"
+    depends_on:
+      backend:
+        condition: service_started
+    volumes:
+      - ./frontend:/app
+    environment:
+      DB_HOST:     postgres
+      DB_USER:     user
+      DB_PASSWORD: password
+      DB_PORT:     "5432"
+      DB_NAME:     churn_db
+
+volumes:
+  pgdata:
