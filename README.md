@@ -21,7 +21,6 @@ A full-stack machine learning application for predicting customer churn in a tel
 - [Setup and Installation](#setup-and-installation)
 - [API Documentation](#api-documentation)
 - [Project Structure](#project-structure)
-- [License](#license)
 - [Contact](#contact)
 
 ---
@@ -291,12 +290,6 @@ Customer-Churn-Prediction/
 │   └── 02_seed_data.sql
 └── docker-compose.yml
 ```
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
 
 ---
 
