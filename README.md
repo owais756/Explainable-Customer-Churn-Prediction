@@ -10,12 +10,6 @@
 
 A full-stack machine learning application for predicting customer churn in a telecommunications company. The system addresses class imbalance using SMOTE, evaluates models using Precision, Recall, F1-Score and ROC-AUC, and uses SHAP-based explainability to identify the key factors driving individual and overall churn predictions.
 
-## Demo
-
-![App Demo](media/demo.gif)
-
----
-
 ## 📋 Table of Contents
 - [Overview](#overview)
 - [Key Features](#key-features)
