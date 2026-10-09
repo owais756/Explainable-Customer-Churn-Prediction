@@ -31,7 +31,6 @@ def plot_tenure_vs_charges(df):
         x='tenure',
         y='monthly_charges',
         color='churn',
-        trendline="ols",
         title="Relationship Between Tenure and Monthly Charges",
         template="plotly_white",
         opacity=0.7,
@@ -213,20 +212,30 @@ def plot_paperlessbilling_vs_churn(df):
 
 def plot_totalcharges_boxplot(df):
     if 'total_charges' in df.columns:
-        fig = px.box(df, x='churn', y='total_charges', title="Total Charges by Churn", template="plotly_white")
+        import pandas as pd
+        plot_df = df.copy()
+        plot_df['total_charges'] = pd.to_numeric(plot_df['total_charges'], errors='coerce')
+        plot_df = plot_df.dropna(subset=['total_charges'])
+        if plot_df.empty:
+            return None
+        fig = px.box(plot_df, x='churn', y='total_charges', title="Total Charges by Churn", template="plotly_white")
         fig.update_layout(xaxis_title="Churn", yaxis_title="Total Charges ($)")
         return fig
     else:
         return None
 
 def plot_scatter_matrix(df):
-    # Choose numeric columns to include. Adjust if needed.
+    import pandas as pd
     numeric_columns = ['tenure', 'monthly_charges']
     if 'total_charges' in df.columns:
         numeric_columns.append('total_charges')
-    
+    plot_df = df.copy()
+    for col in numeric_columns:
+        plot_df[col] = pd.to_numeric(plot_df[col], errors='coerce')
+    plot_df = plot_df.dropna(subset=numeric_columns)
+
     fig = px.scatter_matrix(
-        df,
+        plot_df,
         dimensions=numeric_columns,
         color='churn',
         template="plotly_white",
@@ -247,10 +256,15 @@ def plot_scatter_matrix(df):
     return fig
 
 def plot_kmeans_clusters(df):
+    import pandas as pd
     numeric_columns = ['tenure', 'monthly_charges']
     if 'total_charges' in df.columns:
         numeric_columns.append('total_charges')
-    data_numeric = df[numeric_columns].dropna()
+    data_numeric = df[numeric_columns].copy()
+    # Coerce every column to float — turns whitespace / non-numeric strings into NaN
+    for col in numeric_columns:
+        data_numeric[col] = pd.to_numeric(data_numeric[col], errors='coerce')
+    data_numeric = data_numeric.dropna()
     if data_numeric.empty:
         return None
     kmeans = KMeans(n_clusters=3, random_state=42)

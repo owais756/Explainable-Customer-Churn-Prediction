@@ -48,6 +48,7 @@ services:
     volumes:
       - ./frontend:/app
     environment:
+      API_URL:     http://backend:8000
       DB_HOST:     postgres
       DB_USER:     user
       DB_PASSWORD: password

@@ -56,7 +56,11 @@ def insights_tab(df):
     st.plotly_chart(fig_seg, use_container_width=True)
     
     st.markdown("## Correlation Analysis")
-    numeric_features = df[['tenure', 'monthly_charges', 'total_charges']]
+    import pandas as pd
+    numeric_features = df[['tenure', 'monthly_charges', 'total_charges']].copy()
+    for col in ['tenure', 'monthly_charges', 'total_charges']:
+        numeric_features[col] = pd.to_numeric(numeric_features[col], errors='coerce')
+    numeric_features = numeric_features.dropna()
     corr = numeric_features.corr()
     fig_corr = px.imshow(
         corr,

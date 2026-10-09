@@ -12,6 +12,7 @@ from components.plots import (
 )
 from components.insights import insights_tab
 from components.prediction import prediction_form
+from components.explainability import explainability_tab
 from components.about import about_tab
 
 # Set page configuration
@@ -33,7 +34,7 @@ def main():
     filtered_data = filter_data(data)
 
     # Create tabs with icons
-    tabs = st.tabs(["🏠 Overview", "📊 Insights", "🔮 Prediction", "ℹ️ About"])
+    tabs = st.tabs(["🏠 Overview", "📊 Insights", "🔮 Prediction", "🔍 Explainability", "ℹ️ About"])
 
     # --- Overview Tab ---
     with tabs[0]:
@@ -133,8 +134,12 @@ def main():
         st.markdown("Enter customer details below to predict churn using our trained model.")
         prediction_form()
 
-    # --- About Tab ---
+    # --- Explainability Tab ---
     with tabs[3]:
+        explainability_tab(filtered_data)
+
+    # --- About Tab ---
+    with tabs[4]:
         about_tab()
 if __name__ == "__main__":
     main()

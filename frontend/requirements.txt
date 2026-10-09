@@ -3,7 +3,9 @@ requests>=2.31.0,<3.0.0
 pandas>=2.0.0,<3.0.0
 numpy>=1.24.0,<3.0.0
 plotly>=5.18.0,<6.0.0
-statsmodels>=0.14.0
+# statsmodels removed — no Python 3.14 wheel available; trendline replaced with plain scatter
 scikit-learn==1.6.1
 sqlalchemy>=2.0.0,<3.0.0
 psycopg2-binary>=2.9.0,<3.0.0
+shap>=0.45.0,<1.0.0
+matplotlib>=3.8.0,<4.0.0

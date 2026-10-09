@@ -3,7 +3,7 @@ import requests
 import os
 
 # Try to read from the environment, defaulting to the Compose service name:
-API_URL = os.getenv("API_URL", "http://backend:8000")
+API_URL = os.getenv("API_URL", "http://localhost:8000")
 
 def prediction_form():
     st.header("🔮 Customer Churn Prediction")
@@ -108,10 +108,49 @@ def prediction_form():
                 response = requests.post(f"{API_URL}/predict", json=payload)
                 if response.status_code == 200:
                     result = response.json()
-                    st.success(
-                        f"**Prediction:** {result['prediction']}  \n"
-                        f"**Churn Probability:** {result['probability']:.2%}"
-                    )
+                    prob       = result['probability']
+                    prediction = result['prediction']
+                    risk_lvl   = result.get('risk_level', '')
+                    rec_action = result.get('recommended_action', '')
+
+                    # Colour-coded prediction banner
+                    if prediction == "Yes":
+                        st.error(
+                            f"⚠️ **Prediction: CHURN**  \n"
+                            f"Churn Probability: **{prob:.2%}**  |  Risk Level: **{risk_lvl}**"
+                        )
+                    else:
+                        st.success(
+                            f"✅ **Prediction: NO CHURN**  \n"
+                            f"Churn Probability: **{prob:.2%}**  |  Risk Level: **{risk_lvl}**"
+                        )
+
+                    if rec_action:
+                        st.info(f"💡 **Recommended Action:** {rec_action}")
+
+                    # SHAP top features inline
+                    shap_feats = result.get('shap_top_features', [])
+                    if shap_feats:
+                        st.markdown("#### 🔍 Top Factors Driving This Prediction")
+                        import plotly.graph_objects as go
+                        names  = [f["feature"]    for f in shap_feats]
+                        values = [f["shap_value"] for f in shap_feats]
+                        colors = ["#e53935" if v > 0 else "#1e88e5" for v in values]
+                        fig = go.Figure(go.Bar(
+                            x=values, y=names, orientation='h',
+                            marker_color=colors,
+                            text=[f"{v:+.4f}" for v in values],
+                            textposition='outside'
+                        ))
+                        fig.add_vline(x=0, line_width=1, line_dash="dash", line_color="grey")
+                        fig.update_layout(
+                            xaxis_title="SHAP Value",
+                            yaxis=dict(autorange="reversed"),
+                            height=260, template="plotly_white",
+                            margin=dict(l=10, r=50, t=10, b=30)
+                        )
+                        st.plotly_chart(fig, use_container_width=True)
+                        st.caption("🔴 Red = pushes towards churn · 🔵 Blue = reduces churn risk")
                 else:
                     st.error(f"Prediction failed ({response.status_code}): {response.text}")
             except Exception as e:

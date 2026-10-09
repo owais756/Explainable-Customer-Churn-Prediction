@@ -25,6 +25,11 @@ class CustomerInput(BaseModel):
     services_list:     List[constr(min_length=1)] = []
 
 
+class ShapFeature(BaseModel):
+    feature:    str
+    shap_value: float
+
+
 class PredictionResponse(BaseModel):
     prediction:          str
     probability:         float
@@ -33,6 +38,15 @@ class PredictionResponse(BaseModel):
     recommended_action:  str
     model_version:       str
     customer_id:         Optional[str] = None
+    shap_top_features:   List[ShapFeature] = []
+
+
+class ExplainResponse(BaseModel):
+    customer_id:        Optional[str] = None
+    probability:        float
+    expected_value:     float
+    shap_top_features:  List[ShapFeature]
+    shap_all_features:  List[ShapFeature]
 
 
 class CustomerDetail(BaseModel):
